@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-export requestSent function (store) {
+export function requestSent (store) {
   return next => action => {
     const { payload, meta, type } = action
     // if its a network request
@@ -32,7 +32,7 @@ export function send (namespace, fnName, data) {
         })
 }
 
-export hcMiddleware function hcMiddleware (store) {
+export function hcMiddleware (store) {
     return next => action => {
         const { type, meta } = action
         if (!(meta && meta.isHc)) return next(action)
