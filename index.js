@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-export function requestSent (store) {
+export function requestSendingMiddleware (store) {
   return next => action => {
     const { payload, meta, type } = action
     // if its a network request
