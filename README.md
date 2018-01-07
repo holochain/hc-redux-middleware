@@ -1,6 +1,8 @@
 # hc-redux-middleware
 a few methods of redux middleware for holochain UI apps
 
+To install: `npm install --save hc-redux-middleware`
+
 To use:
 
 ```
