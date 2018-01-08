@@ -39,14 +39,15 @@ export function hcMiddleware (store) {
         // the rest will be handled by redux-promises
         let sendRequest = send(meta.namespace, type, meta.data)
         sendRequest = meta.then ? sendRequest.then(meta.then) : sendRequest
-        const newAction = {
-            ...action,
-            payload: sendRequest,
-            meta: {
-                ...meta,
-                isHc: false
-            }
-        }
+        const newAction = Object.assign({},
+          action,
+          {
+            payload: sendRequest
+          },
+          {
+            meta: Object.assign({}, meta, { isHc: false })
+          }
+        )
         return next(newAction)
     }
 }
