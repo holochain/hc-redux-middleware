@@ -1,6 +1,6 @@
 {
   "name": "hc-redux-middleware",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "a few methods of redux middleware for holochain UI apps",
   "main": "index.js",
   "scripts": {
