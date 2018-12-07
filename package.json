@@ -1,11 +1,12 @@
 {
-  "name": "hc-redux-middleware",
+  "name": "@holochain/hc-redux-middleware",
   "version": "2.0.0",
   "description": "Redux middleware for holochain rust",
   "main": "dist/index.js",
   "scripts": {
     "test": "jest",
-    "build": "mkdir -p dist && babel src --out-dir dist"
+    "build": "mkdir -p dist && babel src --out-dir dist",
+    "prepublish": "npm run build"
   },
   "author": "willem.olding@holo.host",
   "license": "AGPL-3.0",
@@ -24,5 +25,8 @@
     "presets": [
       "env"
     ]
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }

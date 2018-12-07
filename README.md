@@ -1,158 +1,69 @@
 # hc-redux-middleware
-a few methods of redux middleware for holochain UI apps
 
-To install: `npm install --save hc-redux-middleware`
+To install: `npm install --save @holochain/hc-redux-middleware`
 
-To use:
+## Usage
 
-```
-import { hcMiddleware, requestSendingMiddleware } from 'hc-redux-middleware'
-... 
-const middleware = compact([
-  hcMiddleware,
-  requestSendingMiddleware,
-  promiseMiddleware
-])
-let store = createStore(reducers, undefined, compose(applyMiddleware(...middleware)))
-```
-
-## How it works
-
-For a given backend function that you want to call, such as `getFollow`, you first define a constant within `src/actions/index.js`.
+First configure the store to use the middleware
 
 ```
-export const GET_FOLLOW = 'getFollow'
-```
-This is exported so that we can later, and easily, access it within our Redux reducers.
+import { createStore, combineReducers, applyMiddleware } from 'redux'
+import { holochainMiddleware } from '@holochain/hc-redux-middleware'
 
-You then define a function which acts as a Redux "action creator", and give it special properties so that the custom
-Holochain Redux middleware will send the right HTTP request.
+// this url should use the same port set up the holochain container
+const url = 'ws:localhost:3000'
+const middleware = [holochainMiddleware(url)]
 
-```
-export function getFollow(userHash, type, then) {
-  return {
-    type: GET_FOLLOW,
-    meta: {
-      isHc: true,
-      namespace: 'clutter',
-      data: {
-        from: userHash,
-        type: type
-      },
-      then
-    }
-  }
-}
-```
-
-- Make the function accept any data that you need to send to the API.
-- Make the last parameter a variable called `then` which represents a callback function, which will be passed the final value of your API request as well. This uses the promise chains pattern.
-- Make the `type` equal to the constant you defined, like `GET_FOLLOW`.
-- Under `meta`, you must set `isHc` to `true`. This tells the middleware this is a HC request.
-- Under `meta` you must set a `namespace`, which must be the name of your running Holochain app, such as `clutter`. It will be used in the URL the request is sent to.
-- Under `meta`, set `data` to whatever your input parameters for the function were, such as `userHash` and `type`, in the format that the HC app defines. It can be a simple string, like `data: "test"`, or an object like in the example. The middleware will stringify the data to send it to ther server if it's an object.
-- Under `meta`, set the key `then` equal to the value of the `then` parameter that was passed. It doesn't matter if `then` is undefined. This is like the `callback` that you can call when the async request completes.
-
-For a given component, like `App` where you want to enable a server request, create a container component, which we use Redux to `connect` it.
-
-```
-import { connect } from 'react-redux'
-import App from './App'
-import {
-  ...
-  getFollow
-  ...
-} from './actions'
 ...
-const mapDispatchToProps = (dispatch) => {
-  return {
-    ...
-    getFollow: (userHash, type, then) => {
-      dispatch(getFollow(userHash, type, then))
-    }
-  }
-}
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(App)
+let store = createStore(reducer, applyMiddleware(...middleware))
 ```
 
-What this does is define a `prop` called `getFollow` for App, which will actually dispatch the `getFollow` request.
-Now within `App.js` I can just call
+Lets look an example action to see how the middleware works
 
 ```
-  this.props.getFollow(this.props.me, "following")
-```
-
-In this case, I don't provide a callback function.
-
-Now the middleware kicks in. What it does under the hood:
-- It checks whether your action is an HC action: `if (!(meta && meta.isHc))`
-- Uses axios to send a network request with your data
-
-```
-const stringified = typeof data === "object" ? JSON.stringify(data) : data
-return axios.post(`/fn/${namespace}/${fnName}`, stringified)
-...
-```
-
-- `fnName` is based on your action `type` constant that you defined so make sure that that matches the HC app function name
-
-Now, since this performs an async network request, your action will not fire right away! But if you want something to HAPPEN right away, to offer the user feedback on a button click for example, there is another piece of middleware that helps with this. The `requestSendingMiddleware`. It will dispatch an action that looks something like `getFollowSent`.
-You can use this to make some change to `state` to show a `pending` status. It will have the same values in the `meta` of that action as the original action.
-
-Our middleware is combined with `redux-promises` to complete the final step, dispatching the original action once the request completes, with the server response set under `payload` on the action.
-
-You can see how this is set up in `src/index.js`
-
-```
-const middleware = compact([
-  hcMiddleware,
-  requestSendingMiddleware,
-  promiseMiddleware
-])
-let store = createStore(clutterApp, undefined, compose(applyMiddleware(...middleware)))
-```
-
-Now we can access our API values in our reducers, and use them to modify state. e.g.
-
-```
-  // meta.data is the userHash, action.payload is the handle we retrieved for them
-  case A.GET_HANDLE:
-    return Object.assign(
-      {},
-      state,
-      {
-        handles: Object.assign({}, state.handles, { [meta.data]: action.payload })
-      }
-    )
-```
-
-Once we have set these values in state, we can access them using `mapStateToProps` in container components that we `connect`. e.g.
-
-```
-const mapStateToProps = state => {
-  return {
-    handles: state.handles
-  }
+{
+  type: 'someApp/someZome/someCapability/someFunc',
+  payload: { ... }
+  meta: { holochainAction: true }
 }
 ```
 
-Now we can access data from our HC backend in our component, in its props.
+The first thing to notice is the `meta.holochainAction = True`. This is how the middleware detects which actions it should use to make calls to holochain.
+
+Second is the type. The type is also used to carry the information as to which app, zome, capability and function should be called. It is identical to the string passed to `call` in hc-web-client. This means it can also be used to query the container.
+
+The final part is the payload. This will be passed directly to the call to the holochain function and must have fields that match the holochain function signature.
+
+### Action creators
+
+To abstract away from manually creating these actions this module also provides helpers for doing that. For a particular holochain function call it will create an action creator that you can call later with parameters
 
 ```
-this.props.handles[post.author]
+import { holochainActionCreator } from '@holochain/hc-redux-middleware'
+
+const someFuncActionCreator = holochainActionCreator('someApp', 'someZome', 'someCapability', 'someFunc')
+
+// later on when you want to create dispatch an action to call the function with some params
+const action = someFuncActionCreator(params)
+dispatch(action)
+
 ```
 
-This is just a rough overview, just hopefully gives enough of an idea to get started. You will definitely need basic familiarity with redux to use this. They have excellent documentation, check it out.
-[https://redux.js.org](https://redux.js.org)
+### Response Actions
 
+When a successful call to holochain is completed the middleware will dispatch an action containing the response. These actions have a type that is the same as the call but with `_SUCCESS` or `_FAILURE` appended.
 
+```
+{
+  type: 'someApp/someZome/someCapability/someFunc_SUCCESS',
+  payload: { ... } // this contains the function call result
+}
 
+{
+  type: 'someApp/someZome/someCapability/someFunc_FAILURE',
+  payload: { ... } // this contains details of the error
+}
+```
 
-
-
-
-
+These can then be handler by the reducer to update the state
