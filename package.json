@@ -1,20 +1,28 @@
 {
   "name": "hc-redux-middleware",
-  "version": "1.0.3",
-  "description": "a few methods of redux middleware for holochain UI apps",
-  "main": "index.js",
+  "version": "2.0.0",
+  "description": "Redux middleware for holochain rust",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "babel main.js --out-file index.js"
+    "test": "jest",
+    "build": "mkdir -p dist && babel src --out-dir dist"
   },
-  "author": "connorturland@gmail.com",
+  "author": "willem.olding@holo.host",
   "license": "AGPL-3.0",
   "dependencies": {
-    "axios": "^0.17.1",
-    "redux-promise": "^0.5.3"
+    "@holochain/hc-web-client": "file:../hc-web-client"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.0.0-beta.37",
-    "babel-cli": "^6.26.0"
+    "babel-cli": "^6.26.0",
+    "babel-jest": "^23.6.0",
+    "babel-preset-env": "^1.7.0",
+    "jest": "^23.6.0",
+    "mock-socket": "^8.0.5",
+    "simple-jsonrpc-js": "0.0.10"
+  },
+  "babel": {
+    "presets": [
+      "env"
+    ]
   }
 }
