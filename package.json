@@ -1,10 +1,13 @@
 {
   "name": "@holochain/hc-redux-middleware",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Redux middleware for seamless integration with Holochain",
-  "main": "index.js",
-  "typings": "index.d.ts",
+  "main": "build/main/index.js",
+  "typings": "build/main/index.d.ts",
   "module": "build/module/index.js",
+  "files": [
+    "build/main"
+  ],
   "repository": "https://github.com/holochain/hc-redux-middleware",
   "license": "GPL-3.0",
   "keywords": [],
@@ -22,8 +25,7 @@
     "version": "standard-version",
     "clean": "trash build test",
     "all": "run-s test",
-    "prepare-release": "run-s all version",
-    "release": "cp package.json build/main && cd build/main && npm publish"
+    "prepare-release": "run-s all version"
   },
   "scripts-info": {
     "info": "Display information about the package scripts",
