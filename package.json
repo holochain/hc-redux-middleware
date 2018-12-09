@@ -1,12 +1,12 @@
 {
-  "name": "hc-redux-middleware",
+  "name": "@holochain/hc-redux-middleware",
   "version": "1.0.1",
   "description": "Redux middleware for seamless integration with Holochain",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
   "module": "build/module/index.js",
-  "repository": "https://github.com/YOUR_GITHUB_USER_NAME/hc-redux-middleware",
-  "license": "MIT",
+  "repository": "https://github.com/holochain/hc-redux-middleware",
+  "license": "GPL-3.0",
   "keywords": [],
   "scripts": {
     "describe": "npm-scripts-info",
