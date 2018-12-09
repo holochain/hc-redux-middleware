@@ -1,9 +1,5 @@
 {
   "extends": ["tslint-config-standard"],
-  "rules": {
-  	"jsx-no-lambda": false,
-    "jsx-no-multiline-js": false
-  },
   "linterOptions": {
     "exclude": [
       "_test.ts",
