@@ -36,8 +36,9 @@ test('It passes holochain actions and dispatches new action on success ', async 
   let { next, invoke, store } = create()
 
   const holochainAction = createHolochainAsyncAction('happ', 'zome', 'capability', 'func')
-  await invoke(holochainAction.create({}))
+  const result = await invoke(holochainAction.create({}))
 
+  t.true(result === 'success')
   t.true(next.calledWith(holochainAction.create({})))
   t.true(store.dispatch.calledWith(holochainAction.success('success')))
 

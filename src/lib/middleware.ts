@@ -23,17 +23,19 @@ export const holochainMiddleware = (hcWc: hcWebClientConnect): Middleware => sto
         return call(action.meta.callString)(action.payload)
           .then((stringResult: string) => {
             const result = JSON.parse(stringResult)
-            return store.dispatch({
+            store.dispatch({
               type: action.type + '_SUCCESS',
               payload: result
             })
+            return result
           })
           .catch((err: Error) => {
-            return store.dispatch({
+            store.dispatch({
               type: action.type + '_FAILURE',
               payload: err.toString(),
               error: true
             })
+            return err
           })
       })
     } else {
