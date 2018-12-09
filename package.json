@@ -29,9 +29,8 @@
     "doc:json": "typedoc src/ --exclude **/*.spec.ts --target ES6 --mode file --json build/docs/typedoc.json",
     "doc:publish": "gh-pages -m \"[ci skip] Updates\" -d build/docs",
     "version": "standard-version",
-    "reset": "git clean -dfx && git reset --hard && npm i",
     "clean": "trash build test",
-    "all": "run-s reset test cov:check doc:html",
+    "all": "run-s test cov:check doc:html",
     "prepare-release": "run-s all version doc:publish"
   },
   "scripts-info": {
@@ -50,7 +49,10 @@
   "engines": {
     "node": ">=8.9"
   },
-  "dependencies": {},
+  "dependencies": {
+    "redux": "^4.0.1",
+    "typesafe-actions": "^2.0.4"
+  },
   "devDependencies": {
     "ava": "1.0.0-beta.7",
     "codecov": "^3.1.0",
@@ -64,6 +66,7 @@
     "trash-cli": "^1.4.0",
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.17.0",
+    "tslint-config-standard": "^8.0.1",
     "tslint-immutable": "^5.0.0",
     "typedoc": "^0.13.0",
     "typescript": "^3.1.6"
@@ -71,7 +74,7 @@
   "ava": {
     "failFast": true,
     "files": [
-      "build/main/**/*.spec.js"
+      "build/main/**/*.test.js"
     ],
     "sources": [
       "build/main/**/*.js"
@@ -87,7 +90,7 @@
   },
   "nyc": {
     "exclude": [
-      "**/*.spec.js"
+      "**/*.test.js"
     ]
   }
 }

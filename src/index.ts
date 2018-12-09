@@ -1,1 +1,2 @@
-export * from './lib/number';
+export { holochainMiddleware } from './lib/middleware'
+export { createHolochainAsyncAction } from './lib/actionCreator'

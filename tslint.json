@@ -1,9 +1,15 @@
 {
-  "extends": ["tslint:latest", "tslint-config-prettier", "tslint-immutable"],
+  "extends": ["tslint-config-standard"],
   "rules": {
-    "interface-name": [true, "never-prefix"],
-    // TODO: allow devDependencies only in **/*.spec.ts files:
-    // waiting on https://github.com/palantir/tslint/pull/3708
-    "no-implicit-dependencies": [true, "dev"]
+  	"jsx-no-lambda": false,
+    "jsx-no-multiline-js": false
+  },
+  "linterOptions": {
+    "exclude": [
+      "_test.ts",
+      "config/**/*.js",
+      "node_modules/**/*.ts",
+      "coverage/lcov-report/*.js"
+    ]
   }
 }
