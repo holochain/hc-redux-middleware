@@ -4,7 +4,7 @@ To install: `npm install --save @holochain/hc-redux-middleware`
 
 ## Usage
 
-First configure the store to use the middleware
+Configure the store to use the middleware
 
 ```
 import { createStore, combineReducers, applyMiddleware } from 'redux'
