@@ -24,7 +24,7 @@ export const createHolochainAsyncAction = <ParamType, ReturnType>(
 
   const newAction = action as (typeof action & {
     create: (param: ParamType) => any,
-    sig: (param: ParamType) => Promise<{payload: ReturnType}>
+    sig: (param: ParamType) => Promise<ReturnType>
   })
 
   // the action creators that are produced
