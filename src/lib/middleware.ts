@@ -23,17 +23,31 @@ export const holochainMiddleware = (hcWc: hcWebClientConnect): Middleware => sto
         return call(action.meta.callString)(action.payload)
           .then((stringResult: string) => {
             const result = JSON.parse(stringResult)
-            store.dispatch({
-              type: action.type + '_SUCCESS',
-              payload: result
-            })
-            return result
+
+            if (result.Err !== undefined) { // holochain error
+              store.dispatch({
+                type: action.type + '_FAILURE',
+                payload: Error(result.Err)
+              })
+              return Error(result.Err)
+            } else if (result.Ok !== undefined) { // holochain Ok
+              store.dispatch({
+                type: action.type + '_SUCCESS',
+                payload: result.Ok
+              })
+              return result.Ok
+            } else {                 // unknown. Return raw result as success
+              store.dispatch({
+                type: action.type + '_SUCCESS',
+                payload: result
+              })
+              return result
+            }
           })
-          .catch((err: Error) => {
+          .catch((err: Error) => { // websocket error
             store.dispatch({
               type: action.type + '_FAILURE',
-              payload: err.toString(),
-              error: true
+              payload: err.toString()
             })
             return err
           })
