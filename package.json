@@ -1,6 +1,6 @@
 {
   "name": "@holochain/hc-redux-middleware",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Redux middleware for seamless integration with Holochain",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
