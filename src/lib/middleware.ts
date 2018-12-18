@@ -27,9 +27,9 @@ export const holochainMiddleware = (hcWc: hcWebClientConnect): Middleware => sto
             if (result.Err !== undefined) { // holochain error
               store.dispatch({
                 type: action.type + '_FAILURE',
-                payload: Error(result.Err)
+                payload: result.Err
               })
-              return Error(result.Err)
+              return Promise.reject(Error(result.Err))
             } else if (result.Ok !== undefined) { // holochain Ok
               store.dispatch({
                 type: action.type + '_SUCCESS',
@@ -49,7 +49,7 @@ export const holochainMiddleware = (hcWc: hcWebClientConnect): Middleware => sto
               type: action.type + '_FAILURE',
               payload: err.toString()
             })
-            return err
+            return Promise.reject(err)
           })
       })
     } else {

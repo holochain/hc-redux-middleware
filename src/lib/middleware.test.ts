@@ -43,15 +43,18 @@ test('It passes holochain actions and dispatches new action on success. Ok is un
   t.true(store.dispatch.calledWith(holochainAction.success('success')))
 })
 
-test('It passes holochain actions and dispatches new action on holochain error. Err is unwrapped ', async t => {
+test('It passes holochain actions and dispatches new error action on holochain error. Err is unwrapped ', async t => {
   let { next, invoke, store } = create({ Err: 'fail' })
 
   const holochainAction = createHolochainAsyncAction('happ', 'zome', 'capability', 'func')
-  const result = await invoke(holochainAction.create({}))
 
-  t.deepEqual(result, Error('fail'))
-  t.true(next.calledWith(holochainAction.create({})))
-  t.deepEqual(store.dispatch.lastCall.args[0], holochainAction.failure(Error('fail')))
+  try {
+    await invoke(holochainAction.create({}))
+  } catch (result) {
+    t.deepEqual(result, Error('fail'))
+    t.true(next.calledWith(holochainAction.create({})))
+    t.deepEqual(store.dispatch.lastCall.args[0], holochainAction.failure(Error('fail')))
+  }
 })
 
 test('It passes holochain actions and dispatches new action on success. Raw return is passed directly ', async t => {
