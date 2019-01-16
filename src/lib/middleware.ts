@@ -21,8 +21,16 @@ export const holochainMiddleware = (hcWc: hcWebClientConnect): Middleware => sto
 
       return connectPromise.then(call => {
         return call(action.meta.callString)(action.payload)
-          .then((stringResult: string) => {
-            const result = JSON.parse(stringResult)
+          .then((rawResult: string) => {
+
+            // holochain calls will strings (possibly stringified JSON)
+            // while container admin calls will return parsed JSON
+            let result
+            try {
+              result = JSON.parse(rawResult)
+            } catch (e) {
+              result = rawResult
+            }
 
             if (result.Err !== undefined) { // holochain error
               store.dispatch({
@@ -47,7 +55,7 @@ export const holochainMiddleware = (hcWc: hcWebClientConnect): Middleware => sto
           .catch((err: Error) => { // websocket error
             store.dispatch({
               type: action.type + '_FAILURE',
-              payload: err.toString()
+              payload: err
             })
             return Promise.reject(err)
           })

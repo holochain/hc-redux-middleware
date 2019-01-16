@@ -8,13 +8,10 @@ import { createAsyncAction } from 'typesafe-actions'
  *
  */
 export const createHolochainAsyncAction = <ParamType, ReturnType>(
-  happ: string,
-  zome: string,
-  capability: string,
-  func: string
+  ...segments: Array<string>
 ) => {
 
-  const callString = `${happ}/${zome}/${capability}/${func}`
+  const callString = segments.length === 1 ? segments[0] : segments.join('/')
 
   const action = createAsyncAction(
     callString,
