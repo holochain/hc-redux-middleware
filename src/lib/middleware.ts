@@ -16,7 +16,7 @@ export const holochainMiddleware = (hcWc: hcWebClientConnect): Middleware => sto
   })
 
   return next => (action: AnyAction) => {
-    if (action.meta && action.meta.holochainAction && action.meta.callString) {
+    if (action.meta && action.meta.holochainAction && action.meta.callString && action.meta.id) {
       next(action) // resend the original action so the UI can change based on requests
 
       return connectPromise.then(call => {
@@ -35,18 +35,21 @@ export const holochainMiddleware = (hcWc: hcWebClientConnect): Middleware => sto
             if (result.Err !== undefined) { // holochain error
               store.dispatch({
                 type: action.type + '_FAILURE',
+                id: action.meta.id,
                 payload: result.Err
               })
               return Promise.reject(Error(result.Err))
             } else if (result.Ok !== undefined) { // holochain Ok
               store.dispatch({
                 type: action.type + '_SUCCESS',
+                id: action.meta.id,
                 payload: result.Ok
               })
               return result.Ok
             } else {                 // unknown. Return raw result as success
               store.dispatch({
                 type: action.type + '_SUCCESS',
+                id: action.meta.id,
                 payload: result
               })
               return result
@@ -55,6 +58,7 @@ export const holochainMiddleware = (hcWc: hcWebClientConnect): Middleware => sto
           .catch((err: Error) => { // websocket error
             store.dispatch({
               type: action.type + '_FAILURE',
+              id: action.meta.id,
               payload: err
             })
             return Promise.reject(err)

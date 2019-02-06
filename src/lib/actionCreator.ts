@@ -1,5 +1,7 @@
 import { createAsyncAction } from 'typesafe-actions'
 
+let call_id = 0;
+
 /**
  *
  * Function that creates action creators for holochain calls
@@ -30,7 +32,8 @@ export const createHolochainAsyncAction = <ParamType, ReturnType>(
       type: callString,
       meta: {
         holochainAction: true,
-        callString
+        callString,
+        id: ++call_id
       },
       payload: params
     }
