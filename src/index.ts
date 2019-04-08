@@ -1,2 +1,2 @@
 export { holochainMiddleware } from './lib/middleware'
-export { createHolochainAsyncAction } from './lib/actionCreator'
+export { createHolochainZomeCallAsyncAction, createHolochainAdminAsyncAction } from './lib/actionCreator'

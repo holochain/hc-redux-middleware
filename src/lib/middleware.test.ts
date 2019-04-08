@@ -2,14 +2,20 @@ import test from 'ava'
 import sinon from 'sinon'
 
 import { holochainMiddleware } from './middleware'
-import { createHolochainAsyncAction } from './actionCreator'
+import { createHolochainZomeCallAsyncAction, createHolochainAdminAsyncAction } from './actionCreator'
 
-const mockWebClient = (callResponse: any) => Promise.resolve({
+const mockWebClient = (callResponse: string) => Promise.resolve({
   call: (callStr: string) => (params: any) => {
     return Promise.resolve(callResponse)
   },
+  callZome: (instanceId: string, zome: string, func: string) => (params: any) => {
+    return Promise.resolve(callResponse)
+  },
   close: () => Promise.resolve('closed'),
-  ws: null
+  ws: {
+    subscribe: sinon.spy(),
+    on: sinon.spy()
+  }
 })
 
 const create = (callResponse: any) => {
@@ -35,7 +41,7 @@ test('It passes non-holochain actions to the next reducer', async t => {
 test('It passes holochain actions and dispatches new action on success. Ok is unwrapped ', async t => {
   let { next, invoke, store } = create(JSON.stringify({ Ok: 'success' }))
 
-  const holochainAction = createHolochainAsyncAction('happ', 'zome', 'capability', 'func')
+  const holochainAction = createHolochainZomeCallAsyncAction('happ', 'zome','func')
   const result = await invoke(holochainAction.create({}))
 
   t.deepEqual(result, 'success')
@@ -46,7 +52,7 @@ test('It passes holochain actions and dispatches new action on success. Ok is un
 test('It passes holochain actions and dispatches new error action on holochain error. Err is unwrapped ', async t => {
   let { next, invoke, store } = create(JSON.stringify({ Err: 'fail' }))
 
-  const holochainAction = createHolochainAsyncAction('happ', 'zome', 'capability', 'func')
+  const holochainAction = createHolochainZomeCallAsyncAction('happ', 'zome','func')
 
   try {
     await invoke(holochainAction.create({}))
@@ -60,7 +66,7 @@ test('It passes holochain actions and dispatches new error action on holochain e
 test('It passes holochain actions and dispatches new action on success. Raw return is passed directly ', async t => {
   let { next, invoke, store } = create(JSON.stringify({ someField: 'success' }))
 
-  const holochainAction = createHolochainAsyncAction('happ', 'zome', 'capability', 'func')
+  const holochainAction = createHolochainZomeCallAsyncAction('happ', 'zome','func')
   const result = await invoke(holochainAction.create({}))
 
   t.deepEqual(result, { someField: 'success' })
@@ -71,7 +77,7 @@ test('It passes holochain actions and dispatches new action on success. Raw retu
 test('can accept container admin style responses which return unstringified json objects', async t => {
   let { next, invoke, store } = create({ someField: 'success' })
 
-  const holochainAction = createHolochainAsyncAction('admin', 'dna', 'list')
+  const holochainAction = createHolochainAdminAsyncAction('admin', 'dna', 'list')
   const result = await invoke(holochainAction.create({}))
 
   t.deepEqual(result, { someField: 'success' })
@@ -82,7 +88,7 @@ test('can accept container admin style responses which return unstringified json
 test('can accept container admin style responses which return unstringified json arrays', async t => {
   let { next, invoke, store } = create(['item1', 'item2'])
 
-  const holochainAction = createHolochainAsyncAction('admin', 'dna', 'list')
+  const holochainAction = createHolochainAdminAsyncAction('admin', 'dna', 'list')
   const result = await invoke(holochainAction.create({}))
 
   t.deepEqual(result, ['item1', 'item2'])
@@ -93,7 +99,7 @@ test('can accept container admin style responses which return unstringified json
 test('can accept container admin style responses which return plain strings which cannot be parsed to JSON', async t => {
   let { next, invoke, store } = create('test string')
 
-  const holochainAction = createHolochainAsyncAction('admin', 'instance', 'list')
+  const holochainAction = createHolochainAdminAsyncAction('admin', 'instance', 'list')
   const result = await invoke(holochainAction.create({}))
 
   t.deepEqual(result, 'test string')
