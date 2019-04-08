@@ -38,7 +38,7 @@ Lets look an example action to see how the middleware works
 }
 ```
 
-The first thing to notice is the `meta.holochainAction = True`. This is how the middleware detects which actions it should use to make calls to holochain. The call string instructs the holochain web client as to what function it should call. This can follow the `happ/zome/capability/func` format or may also call a container function directly such as `info/instances`
+The first thing to notice is the `meta.holochainZomeCallAction = True`. This is how the middleware detects which actions it should use to make calls to holochain.
 
 The payload will be passed directly to the call to the holochain function and must have fields that match the holochain function signature.
 
