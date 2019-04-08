@@ -79,6 +79,9 @@ When a successful call to holochain is completed the middleware will dispatch an
 
 These can then be handler by the reducer to update the state
 
+### Special actions
+
+There are also several actions that the middleware will dispatch automatically. Currently these are 
 
 #### Typescript support
 
