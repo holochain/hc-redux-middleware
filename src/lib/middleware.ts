@@ -2,6 +2,7 @@ import { Middleware, AnyAction } from 'redux'
 
 type hcWebClientConnect = Promise<{
   call: (callStr: string) => (params: any) => Promise<string>,
+  callZome: (instance: string, zome: string, func: string) => (params: any) => Promise<string>,
   close: () => Promise<any>,
   ws: any
 }>
@@ -10,22 +11,31 @@ export const holochainMiddleware = (hcWc: hcWebClientConnect): Middleware => sto
   // stuff here has the same life as the store!
   // this is how we persist a websocket connection
 
-  const connectPromise = hcWc.then(({ call, ws }) => {
+  const connectPromise = hcWc.then(({ call, callZome, ws }) => {
     store.dispatch({ type: 'HOLOCHAIN_WEBSOCKET_CONNECTED' })
 
     ws.on('close', () => {
       store.dispatch({ type: 'HOLOCHAIN_WEBSOCKET_DISCONNECTED' })
     })
 
-    return call
+    return { call, callZome }
   })
 
   return next => (action: AnyAction) => {
-    if (action.meta && action.meta.holochainAction && action.meta.callString) {
+    if (action.meta && (action.meta.holochainZomeCallAction || action.meta.holochainAdminAction)) {
       next(action) // resend the original action so the UI can change based on requests
 
-      return connectPromise.then(call => {
-        return call(action.meta.callString)(action.payload)
+      return connectPromise.then(({ call, callZome }) => {
+
+        let callFunction
+        if (action.meta.holochainZomeCallAction) {
+          const { instanceId, zome, func } = action.meta
+          callFunction = callZome(instanceId, zome, func)
+        } else {
+          callFunction = call(action.meta.callString)
+        }
+
+        return callFunction(action.payload)
           .then((rawResult: string) => {
 
             // holochain calls will strings (possibly stringified JSON)
