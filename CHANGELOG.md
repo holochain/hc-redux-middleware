@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.1.1"></a>
+## [1.1.1](https://github.com/holochain/hc-redux-middleware/compare/v1.0.9...v1.1.1) (2019-04-09)
+
+
+
 <a name="1.0.9"></a>
 ## [1.0.9](https://github.com/holochain/hc-redux-middleware/compare/v1.0.8...v1.0.9) (2019-01-16)
 
