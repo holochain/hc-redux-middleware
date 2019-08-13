@@ -14,7 +14,7 @@ import { holochainMiddleware } from '@holochain/hc-redux-middleware'
 
 // this url should use the same port set up the holochain container
 const url = 'ws://localhost:3000'
-const hcWc = connect(url)
+const hcWc = connect({ url })
 
 const middleware = [holochainMiddleware(hcWc)]
 
