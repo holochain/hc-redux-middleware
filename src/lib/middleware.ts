@@ -12,7 +12,9 @@ export const holochainMiddleware = (hcWc: hcWebClientConnect): Middleware => sto
   // this is how we persist a websocket connection
 
   const connectPromise = hcWc.then(({ call, callZome, ws }) => {
-    store.dispatch({ type: 'HOLOCHAIN_WEBSOCKET_CONNECTED' })
+    ws.on('open', () => {
+      store.dispatch({ type: 'HOLOCHAIN_WEBSOCKET_CONNECTED' })
+    })
 
     ws.on('close', () => {
       store.dispatch({ type: 'HOLOCHAIN_WEBSOCKET_DISCONNECTED' })
